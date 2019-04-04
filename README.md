@@ -1,7 +1,7 @@
 # SocketTables
-SocketTables provide a socket based communication protocol for performing simple CRUD (Create, Read, Update, Delete) operations.  
+SocketTables provide a socket based communication protocol for performing simple in-memory CRUD (Create, Read, Update, Delete) operations.
 
-SocketTables are designed to use JSON messages to provide access to an in-memory, key-value mapping.
+SocketTables are designed to use JSON messages to provide access to a key-value mapping on a Python server.
 
 
 ## Demo Usage
@@ -16,9 +16,9 @@ Start a demo client with the following command:
 This will continuously get/update/delete values from the server.
 
 ## Example Client
-The SocketTableClient class can be used to send/receive messages to the server.  The script below shows an example of how to get/update/delete values from the server. 
+The SocketTableClient class can be used to send/receive messages to the server.  The Python script below shows an example of how to get/update/delete values from the server. 
 
-```
+```python
 from socketTableClient import SocketTableClient
 
 # Server hostname / port
