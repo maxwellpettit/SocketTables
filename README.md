@@ -16,7 +16,7 @@ Start a demo client with the following command:
 This will continuously get/update/delete values from the server.
 
 ## Example Client
-The SocketTableClient class can be used to send/receive messages to the server.  The Python script below shows an example of how to get/update/delete values from the server. 
+The SocketTableClient class can be used to send/receive messages to/from the server.  The Python script below shows an example of how to get/update/delete values from the server. 
 
 ```python
 from socketTableClient import SocketTableClient
