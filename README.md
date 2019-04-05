@@ -44,7 +44,7 @@ client.delete(key)
 
 ## Protocol Format
 
-The SocketTableServer expects JSON formatted string messages (utf-8 encoding).  Any language can be used to send/receive values from the server as long as the client sends can send messages with the proper format.
+The SocketTableServer expects JSON formatted string messages (utf-8 encoding).  Any language can be used to send/receive values from the server as long as the client can send messages with the proper format.
 
 ### Data is stored on the server in the following format:
 ```
