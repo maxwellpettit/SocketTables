@@ -23,6 +23,24 @@ import time
 HOST = '127.0.0.1'
 PORT = 7777
 
+# JSON value for getting data
+GET = 'GET'
+# JSON value for getting all data
+GETALL = 'GETALL'
+# JSON value for adding/updating data
+UPDATE = 'UPDATE'
+# JSON value for deleting data
+DELETE = 'DELETE'
+
+# JSON property for request
+REQUEST = 'request'
+# JSON property for key
+KEY = 'key'
+# JSON property for value
+VALUE = 'value'
+# JSON property for timestamp
+TIMESTAMP = 'timestamp'
+
 
 class SocketTableClient:
 
@@ -136,8 +154,8 @@ class SocketTableClient:
         """
 
         value = default
-        if (response != None and response.get('value') != None):
-            value = response.get('value')
+        if (response != None and response.get(VALUE) != None):
+            value = response.get(VALUE)
 
         return value
 
@@ -147,13 +165,26 @@ class SocketTableClient:
         """
 
         message = {
-            'request': 'GET',
-            'key': key,
+            REQUEST: GET,
+            KEY: key,
         }
 
         response = self.processMessage(message)
         value = self.parseResponse(response, default)
         return value
+
+    def getAll(self):
+        """
+        Get all the values from the SocketTableServer.
+        """
+
+        message = {
+            REQUEST: GETALL
+        }
+
+        response = self.processMessage(message)
+
+        return response
 
     def update(self, key, value):
         """
@@ -161,9 +192,9 @@ class SocketTableClient:
         """
 
         message = {
-            'request': 'UPDATE',
-            'key': key,
-            'value': value
+            REQUEST: UPDATE,
+            KEY: key,
+            VALUE: value
         }
 
         response = self.processMessage(message)
@@ -177,8 +208,8 @@ class SocketTableClient:
         """
 
         message = {
-            'request': 'DELETE',
-            'key': key,
+            REQUEST: DELETE,
+            KEY: key,
         }
 
         response = self.processMessage(message)
@@ -203,32 +234,35 @@ def main():
     i = 0
 
     client = SocketTableClient()
+    try:
+        while (True):
 
-    while (True):
+            # Update value
+            response = client.update('test1', i)
+            print('Update Value: ', repr(response), '\n')
 
-        # Get bad value (data not available, return default value)
-        response = client.get('test8', 'default')
-        print('Get Value (Bad): ', repr(response), '\n')
+            # Get good value
+            response = client.get('test1', 'default')
+            print('Get Value (Good): ', repr(response), '\n')
 
-        # Update value
-        response = client.update('test1', i)
-        print('Update Value: ', repr(response), '\n')
+            # Update value
+            response = client.update('test2', i + 50)
+            print('Update Value: ', repr(response), '\n')
 
-        # Get good value
-        response = client.get('test1')
-        print('Get Value (Good): ', repr(response), '\n')
+            # Get all values
+            response = client.getAll()
+            print('Get All Values: ', repr(response), '\n')
 
-        # Delete value
-        response = client.delete('test1')
-        print('Delete Value: ', repr(response), '\n')
+            # Delete value
+            response = client.delete('test1')
+            print('Delete Value: ', repr(response), '\n')
 
-        # Get deleted value
-        response = client.get('test1', 'default')
-        print('Get Value (Deleted): ', repr(response), '\n')
+            i += 1
 
-        i += 1
+            time.sleep(1.5)
 
-        time.sleep(1.5)
+    except KeyboardInterrupt:
+        print("Caught keyboard interrupt.  Exiting...")
 
 
 if __name__ == "__main__":
