@@ -14,9 +14,9 @@ Description:   SocketTables provide a socket based communication protocol
 ----------------------------------------------------------------------------
 """
 
-import socket
-import selectors
-import types
+import asyncio
+import threading
+import time
 from socketTableData import SocketTableData
 
 
@@ -32,99 +32,71 @@ class SocketTableServer:
     # Data received from client connections
     socketTableData = SocketTableData()
 
-    # Selector for handling incoming socket connections
-    sel = selectors.DefaultSelector()
-
     def __init__(self, host=HOST, port=PORT):
         self.host = host
         self.port = port
-        self.startSocket()
-        self.process = True
 
-    def startSocket(self):
+    async def handleMessage(self, reader, writer):
         """
-        Open a socket for client communication and register with the selector.
+        Wait for an incoming connection, read the message, and send the response.
         """
 
-        self.lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.lsock.bind((self.host, self.port))
-        self.lsock.listen()
-        print("Listening on: ", (self.host, self.port))
-        self.lsock.setblocking(False)
-        self.sel.register(self.lsock, selectors.EVENT_READ, data=None)
+        # Read the incoming message
+        encodedMessage = await reader.read(self.PACKET_SIZE)
 
-    def processConnections(self):
+        addr = writer.get_extra_info('peername')
+        print('Connected to:', repr(addr))
+
+        # Generate the message response
+        response = self.socketTableData.handleMessage(encodedMessage)
+
+        # Write the response to the client
+        writer.write(response)
+        await writer.drain()
+
+        writer.close()
+
+    def startServer(self, loop: asyncio.AbstractEventLoop):
         """
         Continuously process I/O events and handle the connections accordingly.
         """
 
-        try:
-            while (self.process):
-                # Get the I/O events to process
-                events = self.sel.select(timeout=None)
-                for key, mask in events:
-                    if key.data is None:
-                        # New socket connection
-                        self.acceptWrapper(key.fileobj)
-                    else:
-                        # Existing socket connection to read/write
-                        self.serviceConnection(key, mask)
+        server = asyncio.start_server(self.handleMessage, self.host, self.port, loop=loop)
+        task = loop.run_until_complete(server)
 
+        print('Serving on:', repr(task.sockets[0].getsockname()))
+
+        # Continuously run the async loop
+        try:
+            loop.run_forever()
         except KeyboardInterrupt:
             print("Caught keyboard interrupt.  Exiting...")
-        finally:
-            self.sel.close()
 
-    def acceptWrapper(self, sock):
-        """
-        Accept a new socket connection from a client.
-        """
-
-        conn, addr = sock.accept()
-        print("Accepted connection from: ", addr)
-        conn.setblocking(False)
-
-        data = types.SimpleNamespace(addr=addr, response=None, sent=False)
-
-        events = selectors.EVENT_READ | selectors.EVENT_WRITE
-        self.sel.register(conn, events, data=data)
-
-    def serviceConnection(self, key, mask):
-        """
-        Process data for an open socket connection.
-        """
-
-        sock = key.fileobj
-        data = key.data
-        if mask & selectors.EVENT_READ:
-            # Socket is ready to read data from
-            message = sock.recv(self.PACKET_SIZE)
-            if message:
-                data.response = self.socketTableData.handleMessage(message)
-                data.sent = False
-            else:
-                print("Closing connection to: ", data.addr)
-                self.sel.unregister(sock)
-                sock.close()
-        if mask & selectors.EVENT_WRITE:
-            # Socket is ready to write data to
-            if (data.response != None and not data.sent):
-                print("Responding with value: ", repr(data.response), "to: ", data.addr)
-                sent = sock.send(data.response)
-                if (sent):
-                    data.sent = True
-
-    def stop(self):
-        """
-        Stop processing I/O events.
-        """
-
-        self.process = False
+        # Close the server
+        task.close()
+        loop.run_until_complete(task.wait_closed())
+        loop.close()
 
 
 def main():
+    # Create the SocketTableServer
     server = SocketTableServer()
-    server.processConnections()
+
+    # Create a thread for handling async connections
+    loop = asyncio.get_event_loop()
+    t = threading.Thread(target=server.startServer, args=(loop,))
+
+    # Allow the thread to close when main() ends
+    t.setDaemon(True)
+
+    # Start the server thread
+    t.start()
+
+    # Wait for the thread to complete (optional)
+    try:
+        t.join()
+    except KeyboardInterrupt:
+        print("Caught keyboard interrupt.  Exiting...")
 
 
 if __name__ == "__main__":
