@@ -16,7 +16,7 @@ Start a demo client with the following command:
 This will continuously get/update/delete values from the server.
 
 ## Example Client
-The SocketTableClient class can be used to send/receive messages to the server.  The Python script below shows an example of how to get/update/delete values from the server. 
+The SocketTableClient class can be used to send/receive messages to/from the server.  The Python script below shows an example of how to get/update/delete values from the server. 
 
 ```python
 from socketTableClient import SocketTableClient
@@ -44,7 +44,7 @@ client.delete(key)
 
 ## Protocol Format
 
-The SocketTableServer expects JSON formatted string messages (utf-8 encoding).  Any language can be used to send/receive values from the server as long as the client sends can send messages with the proper format.
+The SocketTableServer expects JSON formatted string messages (utf-8 encoding).  Any language can be used to send/receive values from the server as long as the client can send messages with the proper format.
 
 ### Data is stored on the server in the following format:
 ```
