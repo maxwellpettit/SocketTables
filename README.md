@@ -49,8 +49,10 @@ The SocketTableServer expects JSON formatted string messages (utf-8 encoding).  
 ### Data is stored on the server in the following format:
 ```
 data = {
-    key1: value1,
-    key2: value2,
+    KEY_NAME: {
+        'value': CURRENT_VALUE,
+        'timestamp': LAST_UPDATE_TIME
+    }, 
     ...
 }
 ```
@@ -61,7 +63,7 @@ Getting a value from the server:
 ```
 {
     'request': 'GET',
-    'key': 'REQUESTED_KEY'
+    'key': REQUESTED_KEY
 }
 ```
 
@@ -69,8 +71,8 @@ Updating a value on the server:
 ```
 {
     'request': 'UPDATE',
-    'key': 'REQUESTED_KEY',
-    'value': 'NEW_VALUE'
+    'key': REQUESTED_KEY,
+    'value': NEW_VALUE
 }
 ```
 
@@ -78,14 +80,14 @@ Deleting a value:
 ```
 {
     'request': 'DELETE',
-    'key': 'REQUESTED_KEY'
+    'key': REQUESTED_KEY
 }
 ```
 
 ### Message responses use the following format:
 ```
 {
-    'key': 'REQUESTED_KEY',
-    'value': 'CURRENT_VALUE'
+    'key': REQUESTED_KEY,
+    'value': CURRENT_VALUE
 }
 ```
