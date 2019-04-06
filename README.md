@@ -7,11 +7,11 @@ SocketTables are designed to use JSON messages to provide access to a key-value 
 ## Demo Usage
 Start the server with the following command:
 
-`python3 src/socketTableServer.py`
+`python3 python/socketTableServer.py`
 
 Start a demo client with the following command:
 
-`python3 src/socketTableClient.py`
+`python3 python/socketTableClient.py`
 
 This will continuously get/update/delete values from the server.
 
