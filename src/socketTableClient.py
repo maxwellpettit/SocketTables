@@ -15,31 +15,13 @@ Description:   SocketTables provide a socket based communication protocol
 """
 
 import socket
-import json
 import traceback
 import time
+from socketTableRequest import SocketTableRequest
 
 
 HOST = '127.0.0.1'
 PORT = 7777
-
-# JSON value for getting data
-GET = 'GET'
-# JSON value for getting all data
-GETALL = 'GETALL'
-# JSON value for adding/updating data
-UPDATE = 'UPDATE'
-# JSON value for deleting data
-DELETE = 'DELETE'
-
-# JSON property for request
-REQUEST = 'request'
-# JSON property for key
-KEY = 'key'
-# JSON property for value
-VALUE = 'value'
-# JSON property for timestamp
-TIMESTAMP = 'timestamp'
 
 
 class SocketTableClient:
@@ -72,7 +54,8 @@ class SocketTableClient:
         connected = False
         while (not connected and attempts < maxAttempts):
             try:
-                self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.clientSocket = socket.socket(
+                    socket.AF_INET, socket.SOCK_STREAM)
                 self.clientSocket.settimeout(self.TIMEOUT)
                 self.clientSocket.connect((self.host, self.port))
 
@@ -93,14 +76,13 @@ class SocketTableClient:
 
         return connected
 
-    def sendMessage(self, message: dict):
+    def sendMessage(self, encodedMessage):
         """
         Send a JSON message to the server.
         """
 
         try:
-            print('Sending: ' + repr(message))
-            encodedMessage = json.dumps(message).encode(encoding='utf-8')
+            print('Sending: ' + repr(encodedMessage))
             self.clientSocket.sendall(encodedMessage)
         except:
             print('Error sending message.')
@@ -111,22 +93,18 @@ class SocketTableClient:
         Receive a JSON response from the server.
         """
 
-        encodedMessage = None
+        encodedResponse = None
         try:
-            encodedMessage = self.clientSocket.recv(self.PACKET_SIZE)
+            encodedResponse = self.clientSocket.recv(self.PACKET_SIZE)
         except socket.error:
             print('Error receiving message.')
             traceback.print_exc()
 
-        message = None
-        if (encodedMessage is not None and len(encodedMessage) > 0):
-            message = json.loads(encodedMessage.decode(encoding='utf-8'))
+        print('Received: ' + repr(encodedResponse))
 
-        print('Received: ' + repr(message))
+        return encodedResponse
 
-        return message
-
-    def processMessage(self, message):
+    def processMessage(self, encodedMessage):
         """
         Send the JSON request to the server and wait for the JSON response.
         """
@@ -135,10 +113,10 @@ class SocketTableClient:
 
         connected = self.connect()
 
-        response = None
+        encodedResponse = None
         if (connected):
-            self.sendMessage(message)
-            response = self.receiveMessage()
+            self.sendMessage(encodedMessage)
+            encodedResponse = self.receiveMessage()
 
             self.close()
 
@@ -146,31 +124,18 @@ class SocketTableClient:
         diff = end - start
         print('Round Trip Time: ', str(diff))
 
-        return response
-
-    def parseResponse(self, response, default=None):
-        """
-        Parse the value from the JSON response.
-        """
-
-        value = default
-        if (response != None and response.get(VALUE) != None):
-            value = response.get(VALUE)
-
-        return value
+        return encodedResponse
 
     def get(self, key, default=None):
         """
         Get the value of the key from the SocketTableServer.
         """
 
-        message = {
-            REQUEST: GET,
-            KEY: key,
-        }
+        encodedMessage = SocketTableRequest.get(key)
 
-        response = self.processMessage(message)
-        value = self.parseResponse(response, default)
+        response = self.processMessage(encodedMessage)
+        value = SocketTableRequest.parseResponse(response, default)
+
         return value
 
     def getAll(self):
@@ -178,28 +143,23 @@ class SocketTableClient:
         Get all the values from the SocketTableServer.
         """
 
-        message = {
-            REQUEST: GETALL
-        }
+        encodedMessage = SocketTableRequest.getAll()
 
-        response = self.processMessage(message)
+        response = self.processMessage(encodedMessage)
+        value = SocketTableRequest.parseResponse(response)
 
-        return response
+        return value
 
     def update(self, key, value):
         """
         Update the value of the key in the SocketTableServer.
         """
 
-        message = {
-            REQUEST: UPDATE,
-            KEY: key,
-            VALUE: value
-        }
+        encodedMessage = SocketTableRequest.update(key, value)
 
-        response = self.processMessage(message)
+        response = self.processMessage(encodedMessage)
+        value = SocketTableRequest.parseResponse(response)
 
-        value = self.parseResponse(response)
         return value
 
     def delete(self, key):
@@ -207,14 +167,11 @@ class SocketTableClient:
         Delete the key from the SocketTableServer.
         """
 
-        message = {
-            REQUEST: DELETE,
-            KEY: key,
-        }
+        encodedMessage = SocketTableRequest.delete(key)
 
-        response = self.processMessage(message)
+        response = self.processMessage(encodedMessage)
+        value = SocketTableRequest.parseResponse(response)
 
-        value = self.parseResponse(response)
         return value
 
     def close(self):

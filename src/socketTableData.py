@@ -14,26 +14,8 @@ Description:   SocketTables provide a socket based communication protocol
 ----------------------------------------------------------------------------
 """
 
-import json
 from time import gmtime, strftime
-
-# JSON value for getting data
-GET = 'GET'
-# JSON value for getting all data
-GETALL = 'GETALL'
-# JSON value for adding/updating data
-UPDATE = 'UPDATE'
-# JSON value for deleting data
-DELETE = 'DELETE'
-
-# JSON property for request
-REQUEST = 'request'
-# JSON property for key
-KEY = 'key'
-# JSON property for value
-VALUE = 'value'
-# JSON property for timestamp
-TIMESTAMP = 'timestamp'
+from socketTableMessage import SocketTableMessage
 
 
 class SocketTableData:
@@ -66,16 +48,16 @@ class SocketTableData:
         Get the value for the message key.
         """
 
-        key = message[KEY]
+        key = message[SocketTableMessage.KEY]
 
         value = None
         result = self.data.get(key)
         if (result != None):
-            value = result[VALUE]
+            value = result[SocketTableMessage.VALUE]
 
         response = {
-            KEY: key,
-            VALUE: value
+            SocketTableMessage.KEY: key,
+            SocketTableMessage.VALUE: value
         }
 
         return response
@@ -92,19 +74,19 @@ class SocketTableData:
         Update the value for the message key to the message value.
         """
 
-        key = message[KEY]
-        value = message[VALUE]
+        key = message[SocketTableMessage.KEY]
+        value = message[SocketTableMessage.VALUE]
 
         if (key is not None):
             t = strftime("%Y-%m-%d %H:%M:%S", gmtime())
             self.data[key] = {
-                VALUE: value,
-                TIMESTAMP: t
+                SocketTableMessage.VALUE: value,
+                SocketTableMessage.TIMESTAMP: t
             }
 
         response = {
-            KEY: key,
-            VALUE: value
+            SocketTableMessage.KEY: key,
+            SocketTableMessage.VALUE: value
         }
 
         return response
@@ -114,16 +96,16 @@ class SocketTableData:
         Delete the value for the message key.
         """
 
-        key = message[KEY]
+        key = message[SocketTableMessage.KEY]
 
         value = None
         result = self.data.pop(key)
         if (result != None):
-            value = result[VALUE]
+            value = result[SocketTableMessage.VALUE]
 
         response = {
-            KEY: key,
-            VALUE: value
+            SocketTableMessage.KEY: key,
+            SocketTableMessage.VALUE: value
         }
 
         return response
@@ -136,21 +118,21 @@ class SocketTableData:
         response = None
 
         if (encodedMessage is not None and len(encodedMessage) > 0):
-            message = json.loads(encodedMessage.decode(encoding='utf-8'))
+            message = SocketTableMessage.decodeMessage(encodedMessage)
             print('Received message: ' + repr(message))
 
-            if (message[REQUEST] == GET):
+            if (message[SocketTableMessage.REQUEST] == SocketTableMessage.GET):
                 response = self.get(message)
-            elif (message[REQUEST] == GETALL):
+            elif (message[SocketTableMessage.REQUEST] == SocketTableMessage.GETALL):
                 response = self.getAll()
-            elif (message[REQUEST] == UPDATE):
+            elif (message[SocketTableMessage.REQUEST] == SocketTableMessage.UPDATE):
                 response = self.update(message)
-            elif (message[REQUEST] == DELETE):
+            elif (message[SocketTableMessage.REQUEST] == SocketTableMessage.DELETE):
                 response = self.delete(message)
             else:
                 print('Unknown message format: ' + repr(message))
 
             print('Responding with message: ' + repr(response))
 
-        encodedResponse = json.dumps(response).encode(encoding='utf-8')
+        encodedResponse = SocketTableMessage.encodeMessage(response)
         return encodedResponse
