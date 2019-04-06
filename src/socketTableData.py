@@ -99,8 +99,8 @@ class SocketTableData:
         key = message[SocketTableMessage.KEY]
 
         value = None
-        result = self.data.pop(key)
-        if (result != None):
+        if (key in self.data):
+            result = self.data.pop(key)
             value = result[SocketTableMessage.VALUE]
 
         response = {
