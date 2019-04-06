@@ -71,8 +71,9 @@ public class SocketTableClient {
         String response = request.processMessage("GET", key, null);
 
         boolean value = defaultValue;
-        value = Boolean.parseBoolean(response);
-
+        if (response != null) {
+            value = Boolean.parseBoolean(response);
+        }
         return value;
     }
 
@@ -168,7 +169,7 @@ public class SocketTableClient {
             }
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(10);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
