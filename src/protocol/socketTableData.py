@@ -15,7 +15,7 @@ Description:   SocketTables provide a socket based communication protocol
 """
 
 from time import gmtime, strftime
-from socketTableMessage import SocketTableMessage
+from .socketTableMessage import SocketTableMessage
 
 
 class SocketTableData:
@@ -32,7 +32,7 @@ class SocketTableData:
         ...
     }
     """
-    data: dict
+    data = {}
 
     def __init__(self):
         self.reset()

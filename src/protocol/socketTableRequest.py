@@ -15,7 +15,7 @@ Description:   SocketTables provide a socket based communication protocol
 """
 
 
-from socketTableMessage import SocketTableMessage
+from .socketTableMessage import SocketTableMessage
 
 
 class SocketTableRequest:

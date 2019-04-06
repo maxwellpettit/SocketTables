@@ -17,7 +17,7 @@ Description:   SocketTables provide a socket based communication protocol
 import socket
 import traceback
 import time
-from socketTableRequest import SocketTableRequest
+from protocol import SocketTableRequest
 
 
 HOST = '127.0.0.1'

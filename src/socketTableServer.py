@@ -17,7 +17,7 @@ Description:   SocketTables provide a socket based communication protocol
 import asyncio
 import threading
 import time
-from socketTableData import SocketTableData
+from protocol import SocketTableData
 
 
 HOST = '0.0.0.0'
