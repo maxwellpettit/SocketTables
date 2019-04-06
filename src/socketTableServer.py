@@ -61,7 +61,8 @@ class SocketTableServer:
         Continuously process I/O events and handle the connections accordingly.
         """
 
-        server = asyncio.start_server(self.handleMessage, self.host, self.port, loop=loop)
+        server = asyncio.start_server(
+            self.handleMessage, self.host, self.port, loop=loop)
         task = loop.run_until_complete(server)
 
         print('Serving on:', repr(task.sockets[0].getsockname()))
@@ -77,10 +78,20 @@ class SocketTableServer:
         loop.run_until_complete(task.wait_closed())
         loop.close()
 
+    def setCallback(self, key, callback):
+        """
+        Register a callback function for a specified key.
+        """
+
+        self.socketTableData.setCallback(key, callback)
+
 
 def main():
     # Create the SocketTableServer
     server = SocketTableServer()
+
+    # Add an example callback function for test1
+    server.setCallback('test1', test)
 
     # Create a thread for handling async connections
     loop = asyncio.get_event_loop()
@@ -97,6 +108,10 @@ def main():
         t.join()
     except KeyboardInterrupt:
         print("Caught keyboard interrupt.  Exiting...")
+
+
+def test(value, request):
+    print("CALL BACK EXECUTED: " + repr(value) + " REQUEST: " + repr(request))
 
 
 if __name__ == "__main__":

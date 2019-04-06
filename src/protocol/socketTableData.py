@@ -34,6 +34,9 @@ class SocketTableData:
     """
     data = {}
 
+    # Callback functions for a specified key
+    callbacks = {}
+
     def __init__(self):
         self.reset()
 
@@ -134,5 +137,33 @@ class SocketTableData:
 
             print('Responding with message: ' + repr(response))
 
+            # Handle callbacks
+            self.handleCallbacks(message, response)
+
         encodedResponse = SocketTableMessage.encodeMessage(response)
         return encodedResponse
+
+    def handleCallbacks(self, message, response):
+        """
+        Execute callback functions when a key changes.
+        """
+
+        if (SocketTableMessage.KEY in message):
+            request = message[SocketTableMessage.REQUEST]
+            key = message[SocketTableMessage.KEY]
+            value = None
+            if (response is not None and SocketTableMessage.VALUE in response):
+                value = response[SocketTableMessage.VALUE]
+
+            if (key is not None and key in self.callbacks):
+                # Execute the callback function
+                self.callbacks[key](value, request)
+
+    def setCallback(self, key, callback):
+        """
+        Register a callback function for a specified key.
+        """
+
+        print("Registering callback for key: " + repr(key))
+
+        self.callbacks[key] = callback
