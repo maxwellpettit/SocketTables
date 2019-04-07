@@ -36,6 +36,7 @@ public class SocketTableServer {
         final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(CLIENT_POOL_SIZE);
 
         Runnable serverTask = () -> {
+
             ServerSocket serverSocket = null;
             try {
                 serverSocket = new ServerSocket(SocketTableServer.this.port);
@@ -57,7 +58,8 @@ public class SocketTableServer {
                 }
 
                 if (clientSocket != null) {
-                    clientProcessingPool.submit(new SocketTableMessageHandler(socketTableData, clientSocket));
+                    // clientProcessingPool.submit(new SocketTableMessageHandler(socketTableData, clientSocket));
+                    new SocketTableMessageHandler(socketTableData, clientSocket).run();
                     System.out.println("SocketTableServer waiting...");
                 }
             }

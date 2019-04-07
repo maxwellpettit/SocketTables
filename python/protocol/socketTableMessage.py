@@ -46,6 +46,8 @@ class SocketTableMessage:
 
     @staticmethod
     def decodeMessage(encodedMessage):
-        message = json.loads(encodedMessage.decode(
-            encoding='utf-8'), object_pairs_hook=OrderedDict)
+        message = None
+        if (encodedMessage is not None):
+            message = json.loads(encodedMessage.decode(
+                encoding='utf-8'), object_pairs_hook=OrderedDict)
         return message
