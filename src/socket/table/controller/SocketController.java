@@ -14,15 +14,12 @@ public class SocketController {
 		ControllerManager controllers = new ControllerManager();
 		controllers.initSDLGamepad();
 
-		// Print a message when the "A" button is pressed. Exit if the "B" button is
-		// pressed or the controller disconnects.
 		ControllerIndex controller = controllers.getControllerIndex(0);
 
 		SocketTableClient client = new SocketTableClient();
 
 		while (true) {
-			// If using ControllerIndex, you should call update() to check if a new
-			// controller was plugged in or unplugged at this index.
+
 			controllers.update();
 
 			try {
