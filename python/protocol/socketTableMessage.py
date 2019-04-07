@@ -15,6 +15,7 @@ Description:   SocketTables provide a socket based communication protocol
 """
 
 import json
+from collections import OrderedDict
 
 
 class SocketTableMessage:
@@ -39,10 +40,12 @@ class SocketTableMessage:
 
     @staticmethod
     def encodeMessage(message):
-        encodedMessage = json.dumps(message).encode(encoding='utf-8')
+        encodedMessage = json.dumps(
+            OrderedDict(message)).encode(encoding='utf-8')
         return encodedMessage
 
     @staticmethod
     def decodeMessage(encodedMessage):
-        message = json.loads(encodedMessage.decode(encoding='utf-8'))
+        message = json.loads(encodedMessage.decode(
+            encoding='utf-8'), object_pairs_hook=OrderedDict)
         return message
