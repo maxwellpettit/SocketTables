@@ -14,6 +14,8 @@ Description:   SocketTables provide a socket based communication protocol
 ----------------------------------------------------------------------------
 */
 
+import socket.table.RequestType;
+
 public class SocketTableClient {
 
 	private String host = "127.0.0.1";
@@ -129,10 +131,6 @@ public class SocketTableClient {
 
 		boolean success = response != null;
 		return success;
-	}
-
-	public enum RequestType {
-		GET, UPDATE, DELETE
 	}
 
 	public static void main(String[] args) {

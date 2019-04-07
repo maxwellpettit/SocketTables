@@ -24,11 +24,11 @@ import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import socket.table.client.SocketTableClient.RequestType;
+import socket.table.RequestType;
 
 public class SocketTableRequest {
 
-	private static final String PYTHON_MESSAGE_TEMPLATE = "{\"request\" : \"%s\", \"key\" : \"%s\", \"value\" : \"%s\"}";
+	private static final String PYTHON_MESSAGE_TEMPLATE = "{\"request\": \"%s\", \"key\": \"%s\", \"value\": \"%s\"}";
 	private static final String PYTHON_RESPONSE_TEMPLATE = "\\{\"key\": \"(.+)\", \"value\": \"?([^\"]+)\"?\\}";
 
 	private final Pattern RESPONSE_PATTERN = Pattern.compile(PYTHON_RESPONSE_TEMPLATE);
