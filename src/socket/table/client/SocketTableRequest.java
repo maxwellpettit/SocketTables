@@ -24,6 +24,8 @@ import java.net.UnknownHostException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import socket.table.client.SocketTableClient.RequestType;
+
 public class SocketTableRequest {
 
 	private static final String PYTHON_MESSAGE_TEMPLATE = "{\"request\" : \"%s\", \"key\" : \"%s\", \"value\" : \"%s\"}";
@@ -74,7 +76,7 @@ public class SocketTableRequest {
 		}
 	}
 
-	public String processMessage(String request, String key, String value) {
+	public String processMessage(RequestType request, String key, String value) {
 		String response = null;
 
 		try {
@@ -83,7 +85,7 @@ public class SocketTableRequest {
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			// Format message
-			String message = String.format(PYTHON_MESSAGE_TEMPLATE, request, key, value);
+			String message = String.format(PYTHON_MESSAGE_TEMPLATE, request.toString(), key, value);
 
 			// Send message
 			if (debug) {

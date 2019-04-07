@@ -30,7 +30,7 @@ public class SocketTableClient {
 	public String getString(String key, String defaultValue) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String value = request.processMessage("GET", key, null);
+		String value = request.processMessage(RequestType.GET, key, null);
 		if (value == null) {
 			value = defaultValue;
 		}
@@ -41,7 +41,7 @@ public class SocketTableClient {
 	public int getInt(String key, int defaultValue) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String response = request.processMessage("GET", key, null);
+		String response = request.processMessage(RequestType.GET, key, null);
 
 		int value = defaultValue;
 		try {
@@ -55,7 +55,7 @@ public class SocketTableClient {
 	public double getDouble(String key, double defaultValue) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String response = request.processMessage("GET", key, null);
+		String response = request.processMessage(RequestType.GET, key, null);
 
 		double value = defaultValue;
 		try {
@@ -69,7 +69,7 @@ public class SocketTableClient {
 	public boolean getBoolean(String key, boolean defaultValue) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String response = request.processMessage("GET", key, null);
+		String response = request.processMessage(RequestType.GET, key, null);
 
 		boolean value = defaultValue;
 		if (response != null) {
@@ -81,7 +81,7 @@ public class SocketTableClient {
 	public boolean updateString(String key, String value) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String response = request.processMessage("UPDATE", key, value);
+		String response = request.processMessage(RequestType.UPDATE, key, value);
 
 		boolean success = false;
 		if (value == null && response == null) {
@@ -96,7 +96,7 @@ public class SocketTableClient {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
 		String stringValue = Integer.toString(value);
-		String response = request.processMessage("UPDATE", key, stringValue);
+		String response = request.processMessage(RequestType.UPDATE, key, stringValue);
 
 		boolean success = stringValue.equals(response);
 		return success;
@@ -106,7 +106,7 @@ public class SocketTableClient {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
 		String stringValue = Double.toString(value);
-		String response = request.processMessage("UPDATE", key, stringValue);
+		String response = request.processMessage(RequestType.UPDATE, key, stringValue);
 
 		boolean success = stringValue.equals(response);
 		return success;
@@ -116,7 +116,7 @@ public class SocketTableClient {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
 		String stringValue = Boolean.toString(value);
-		String response = request.processMessage("UPDATE", key, stringValue);
+		String response = request.processMessage(RequestType.UPDATE, key, stringValue);
 
 		boolean success = stringValue.equals(response);
 		return success;
@@ -125,10 +125,14 @@ public class SocketTableClient {
 	public boolean delete(String key) {
 		SocketTableRequest request = new SocketTableRequest(host, port);
 
-		String response = request.processMessage("DELETE", key, null);
+		String response = request.processMessage(RequestType.DELETE, key, null);
 
 		boolean success = response != null;
 		return success;
+	}
+
+	public enum RequestType {
+		GET, UPDATE, DELETE
 	}
 
 	public static void main(String[] args) {
