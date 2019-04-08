@@ -14,10 +14,10 @@ import socket.table.RequestType;
 public class SocketTableMessageHandler implements Runnable {
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
-    private static final String PYTHON_MESSAGE_TEMPLATE = "\\{\"request\": \"([A-Z]+)\", \"key\": \"(([^\"]+)+)\"(, \"value\": \"?([^\"]+)\"?)?\\}";
-    private static final String PYTHON_RESPONSE_TEMPLATE = "{\"key\": \"%s\", \"value\": \"%s\"}";
+    private static final String CLIENT_MESSAGE_TEMPLATE = "\\{\"request\": \"([A-Z]+)\", \"key\": \"([^\"]+)\"(, \"value\": \"?([^\"]+)\"?)?\\}";
+    private static final String SERVER_RESPONSE_TEMPLATE = "{\"key\": \"%s\", \"value\": \"%s\"}";
 
-    private final Pattern MESSAGE_PATTERN = Pattern.compile(PYTHON_MESSAGE_TEMPLATE);
+    private final Pattern MESSAGE_PATTERN = Pattern.compile(CLIENT_MESSAGE_TEMPLATE);
 
     private final Socket clientSocket;
 
@@ -75,15 +75,17 @@ public class SocketTableMessageHandler implements Runnable {
                     result = socketTableData.getString(key, null);
                 } else if (request.equals(RequestType.UPDATE.toString())) {
                     // Handle UPDATE
-                    String value = matcher.group(5);
+                    String value = matcher.group(4);
                     result = socketTableData.updateString(key, value);
                 } else if (request.equals(RequestType.DELETE.toString())) {
                     // Handle DELETE
                     result = socketTableData.delete(key);
-
                 } else {
+                    // TODO: Handle GETALL
                     System.out.println("Unknown request type: " + request);
                 }
+
+                // TODO: Handle callbacks
 
                 response = formatResponse(key, result);
             }
@@ -95,7 +97,7 @@ public class SocketTableMessageHandler implements Runnable {
     }
 
     public String formatResponse(String key, String value) {
-        return String.format(PYTHON_RESPONSE_TEMPLATE, key, value);
+        return String.format(SERVER_RESPONSE_TEMPLATE, key, value);
     }
 
     private void closeSocket() {

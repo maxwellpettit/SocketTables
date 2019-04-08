@@ -28,10 +28,10 @@ import socket.table.RequestType;
 
 public class SocketTableRequest {
 
-	private static final String PYTHON_MESSAGE_TEMPLATE = "{\"request\": \"%s\", \"key\": \"%s\", \"value\": \"%s\"}";
-	private static final String PYTHON_RESPONSE_TEMPLATE = "\\{\"key\": \"(.+)\", \"value\": \"?([^\"]+)\"?\\}";
+	private static final String CLIENT_MESSAGE_TEMPLATE = "{\"request\": \"%s\", \"key\": \"%s\", \"value\": \"%s\"}";
+	private static final String SERVER_RESPONSE_TEMPLATE = "\\{\"key\": \"(.+)\", \"value\": \"?([^\"]+)\"?\\}";
 
-	private final Pattern RESPONSE_PATTERN = Pattern.compile(PYTHON_RESPONSE_TEMPLATE);
+	private final Pattern RESPONSE_PATTERN = Pattern.compile(SERVER_RESPONSE_TEMPLATE);
 
 	private static final int TIMEOUT_MS = 50;
 
@@ -85,7 +85,7 @@ public class SocketTableRequest {
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			// Format message
-			String message = String.format(PYTHON_MESSAGE_TEMPLATE, request.toString(), key, value);
+			String message = String.format(CLIENT_MESSAGE_TEMPLATE, request.toString(), key, value);
 
 			// Send message
 			if (debug) {

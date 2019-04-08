@@ -58,21 +58,25 @@ public class SocketTableData {
     }
 
     public synchronized String updateString(String key, String value) {
+        // TODO: Update timestamps
         this.data.put(key, value);
         return value;
     }
 
     public synchronized int updateInt(String key, int value) {
+        // TODO: Update timestamps
         this.data.put(key, Integer.toString(value));
         return value;
     }
 
     public synchronized double updateDouble(String key, double value) {
+        // TODO: Update timestamps
         this.data.put(key, Double.toString(value));
         return value;
     }
 
     public synchronized boolean updateBoolean(String key, boolean value) {
+        // TODO: Update timestamps
         this.data.put(key, Boolean.toString(value));
         return value;
     }
