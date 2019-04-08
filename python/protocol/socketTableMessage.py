@@ -40,8 +40,12 @@ class SocketTableMessage:
 
     @staticmethod
     def encodeMessage(message):
-        encodedMessage = json.dumps(
-            OrderedDict(message)).encode(encoding='utf-8')
+        messageJson = json.dumps(OrderedDict(message))
+
+        # Add newline to message
+        messageJson = "%s\n" % messageJson
+
+        encodedMessage = messageJson.encode(encoding='utf-8')
         return encodedMessage
 
     @staticmethod

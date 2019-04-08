@@ -31,7 +31,7 @@ class SocketTableClient:
     # Connection Attempts before exiting
     CONNECTION_ATTEMPTS = 60
     # Timeout for receiving packets
-    TIMEOUT = 0.5
+    TIMEOUT = 0.05
 
     clientSocket = None
 
@@ -40,8 +40,8 @@ class SocketTableClient:
         self.port = port
 
         # Wait for connection at startup
-        #self.connect(retry=True)
-        #self.close()
+        self.connect(retry=True)
+        self.close()
 
     def connect(self, retry=False):
         """
@@ -58,7 +58,7 @@ class SocketTableClient:
             try:
                 self.clientSocket = socket.socket(
                     socket.AF_INET, socket.SOCK_STREAM)
-                # self.clientSocket.settimeout(self.TIMEOUT)
+                self.clientSocket.settimeout(self.TIMEOUT)
                 self.clientSocket.connect((self.host, self.port))
 
                 connected = True

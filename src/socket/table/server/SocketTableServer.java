@@ -11,10 +11,8 @@ import socket.table.server.SocketTableMessageHandler;
 public class SocketTableServer {
 
     // Number of threads to handle incoming requests
-    protected static final int CLIENT_POOL_SIZE = 1;
+    protected static final int CLIENT_POOL_SIZE = 4;
 
-    // As far as I know, available "team use" ports are numbered 5800-5810
-    public static final int DEFAULT_ROBOT_SERVER_PORT = 5801;
     private int port = 7777;
 
     protected boolean stopped = false;
@@ -39,6 +37,7 @@ public class SocketTableServer {
 
             ServerSocket serverSocket = null;
             try {
+                // Bind server socket
                 serverSocket = new ServerSocket(SocketTableServer.this.port);
                 System.out.println("SocketTableServer is listning on port: " + SocketTableServer.this.port);
             } catch (Exception ex) {
@@ -47,43 +46,43 @@ public class SocketTableServer {
                 ex.printStackTrace();
             }
 
+            // Continuously listen for incoming socket connections
             while (!SocketTableServer.this.stopped) {
                 Socket clientSocket = null;
 
                 try {
+                    // Accept an incoming socket connection
                     clientSocket = serverSocket.accept();
                 } catch (Exception ex) {
                     System.out.println("Failure on serverSocket accept.");
                     ex.printStackTrace();
                 }
 
+                // Handle the socket message and response
                 if (clientSocket != null) {
-                    // clientProcessingPool.submit(new SocketTableMessageHandler(socketTableData, clientSocket));
-                    new SocketTableMessageHandler(socketTableData, clientSocket).run();
-                    System.out.println("SocketTableServer waiting...");
+                    clientProcessingPool.submit(new SocketTableMessageHandler(socketTableData, clientSocket));
                 }
             }
 
             System.out.println("SocketTableServer stopped.");
         };
 
+        // Start the SocketTableServer
         Thread serverThread = new Thread(serverTask);
         serverThread.start();
 
     }
 
-    /**
-     * @return the stopped
-     */
     public boolean isStopped() {
         return stopped;
     }
 
-    /**
-     * @return the port
-     */
     public int getPort() {
         return port;
+    }
+
+    public SocketTableData getData() {
+        return this.socketTableData;
     }
 
     public static void main(String[] args) {

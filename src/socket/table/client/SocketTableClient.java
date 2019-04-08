@@ -36,7 +36,6 @@ public class SocketTableClient {
 		if (value == null) {
 			value = defaultValue;
 		}
-
 		return value;
 	}
 
@@ -75,6 +74,7 @@ public class SocketTableClient {
 
 		boolean value = defaultValue;
 		if (response != null) {
+
 			value = Boolean.parseBoolean(response);
 		}
 		return value;

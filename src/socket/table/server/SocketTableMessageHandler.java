@@ -6,7 +6,6 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,21 +68,17 @@ public class SocketTableMessageHandler implements Runnable {
             String request = matcher.group(1);
             String key = matcher.group(2);
 
-            // System.out.println("Request: " + request);
-            // System.out.println("Key: " + key);
-
             if (request != null && key != null) {
                 String result = null;
                 if (request.equals(RequestType.GET.toString())) {
+                    // Handle GET
                     result = socketTableData.getString(key, null);
-
                 } else if (request.equals(RequestType.UPDATE.toString())) {
+                    // Handle UPDATE
                     String value = matcher.group(5);
-                    // System.out.println("Value: " + value);
-
                     result = socketTableData.updateString(key, value);
-
                 } else if (request.equals(RequestType.DELETE.toString())) {
+                    // Handle DELETE
                     result = socketTableData.delete(key);
 
                 } else {
@@ -100,8 +95,7 @@ public class SocketTableMessageHandler implements Runnable {
     }
 
     public String formatResponse(String key, String value) {
-        String response = String.format(PYTHON_RESPONSE_TEMPLATE, key, value);
-        return response;
+        return String.format(PYTHON_RESPONSE_TEMPLATE, key, value);
     }
 
     private void closeSocket() {
