@@ -47,7 +47,7 @@ public class SocketTableServer {
             }
 
             // Continuously listen for incoming socket connections
-            while (!SocketTableServer.this.stopped) {
+            while (serverSocket != null && !SocketTableServer.this.stopped) {
                 Socket clientSocket = null;
 
                 try {
