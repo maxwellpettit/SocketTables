@@ -14,7 +14,7 @@ Description:   SocketTables provide a socket based communication protocol
 ----------------------------------------------------------------------------
 */
 
-import socket.table.RequestType;
+import socket.table.util.RequestType;
 
 public class SocketTableClient {
 

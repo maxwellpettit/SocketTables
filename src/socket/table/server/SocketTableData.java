@@ -1,5 +1,19 @@
 package socket.table.server;
 
+/*
+----------------------------------------------------------------------------
+Author(s):     Maxwell Pettit
+
+Date:          4/1/2019
+
+Description:   SocketTables provide a socket based communication protocol 
+               for performing simple in-memory CRUD (Create, Read, Update, 
+               Delete) operations. SocketTables are designed to use JSON 
+               messages to provide access to a key-value mapping on a 
+               Python server.
+----------------------------------------------------------------------------
+*/
+
 import java.util.HashMap;
 import java.util.Map;
 

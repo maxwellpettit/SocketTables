@@ -21,23 +21,17 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import socket.table.RequestType;
+import socket.table.util.MessageParser;
+import socket.table.util.RequestType;
 
 public class SocketTableRequest {
-
-	private static final String CLIENT_MESSAGE_TEMPLATE = "{\"request\": \"%s\", \"key\": \"%s\", \"value\": \"%s\"}";
-	private static final String SERVER_RESPONSE_TEMPLATE = "\\{\"key\": \"(.+)\", \"value\": \"?([^\"]+)\"?\\}";
-
-	private final Pattern RESPONSE_PATTERN = Pattern.compile(SERVER_RESPONSE_TEMPLATE);
 
 	private static final int TIMEOUT_MS = 50;
 
 	private String host;
 	private int port;
-	private boolean debug = false;
+	private boolean debug = true;
 
 	private Socket clientSocket;
 
@@ -85,7 +79,7 @@ public class SocketTableRequest {
 			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 
 			// Format message
-			String message = String.format(CLIENT_MESSAGE_TEMPLATE, request.toString(), key, value);
+			String message = MessageParser.formatMessage(request, key, value);
 
 			// Send message
 			if (debug) {
@@ -100,10 +94,9 @@ public class SocketTableRequest {
 			}
 
 			// Parse response
-			Matcher matcher = RESPONSE_PATTERN.matcher(responseMessage);
-			if (matcher.find()) {
-				response = matcher.group(2);
-			} else {
+			response = MessageParser.parseMessage(responseMessage, MessageParser.VALUE_PATTERN);
+
+			if (response == null) {
 				System.out.println("Unable to parse message.");
 			}
 
