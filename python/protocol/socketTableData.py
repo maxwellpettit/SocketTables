@@ -70,7 +70,15 @@ class SocketTableData:
         Get all values from the server.
         """
 
-        return self.data
+        response = []
+        for key in self.data:
+            entry = {
+                SocketTableMessage.KEY: key,
+                SocketTableMessage.VALUE: self.data.get(key).get('value')
+            }
+            response.append(entry)
+
+        return response
 
     def update(self, message):
         """

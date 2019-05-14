@@ -103,4 +103,8 @@ public class SocketTableData {
         return value;
     }
 
+    public synchronized Map<String, String> getAll() {
+        return this.data;
+    }
+
 }

@@ -16,9 +16,11 @@ Description:   SocketTables provide a socket based communication protocol
 
 import asyncio
 import threading
-import time
+import signal
 from protocol import SocketTableData
 
+# Work around for killing Windows process
+signal.signal(signal.SIGINT, signal.SIG_DFL)
 
 HOST = '0.0.0.0'
 PORT = 7777

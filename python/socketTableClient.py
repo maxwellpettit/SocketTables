@@ -148,7 +148,7 @@ class SocketTableClient:
         encodedMessage = SocketTableRequest.getAll()
 
         response = self.processMessage(encodedMessage)
-        value = SocketTableRequest.parseResponse(response)
+        value = SocketTableRequest.parseGetAllResponse(response)
 
         return value
 

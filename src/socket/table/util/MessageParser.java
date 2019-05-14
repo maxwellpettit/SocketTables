@@ -1,5 +1,8 @@
 package socket.table.util;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /*
 ----------------------------------------------------------------------------
 Author(s):     Maxwell Pettit
@@ -48,6 +51,39 @@ public class MessageParser {
 
     public static String formatMessage(RequestType request, String key, String value) {
         return String.format(CLIENT_MESSAGE_TEMPLATE, request.toString(), key, value);
+    }
+
+    public static Map<String, String> parseGetAllMessage(String message) {
+        Map<String, String> values = new HashMap<>();
+
+        Matcher keyMatcher = KEY_PATTERN.matcher(message);
+        Matcher valueMatcher = VALUE_PATTERN.matcher(message);
+
+        while (keyMatcher.find() && valueMatcher.find()) {
+            String key = keyMatcher.group(1);
+            String value = valueMatcher.group(1);
+            values.put(key, value);
+        }
+
+        return values;
+    }
+
+    public static String formatGetAllResponse(Map<String, String> data) {
+        StringBuilder response = new StringBuilder();
+        response.append("[");
+
+        int i = 0;
+        for (String key : data.keySet()) {
+            String value = data.get(key);
+            response.append(String.format(SERVER_RESPONSE_TEMPLATE, key, value));
+            if (i < data.size() - 1) {
+                response.append(", ");
+            }
+            i++;
+        }
+        response.append("]");
+
+        return response.toString();
     }
 
 }

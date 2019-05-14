@@ -35,6 +35,23 @@ class SocketTableRequest:
         return value
 
     @staticmethod
+    def parseGetAllResponse(encodedResponse, default=None):
+        """
+        Parse the GETALL values from the JSON response.
+        """
+
+        response = SocketTableMessage.decodeMessage(encodedResponse)
+        values = {}
+
+        if (response != None):
+            for data in response:
+                key = data.get('key')
+                value = data.get('value')
+                values[key] = value
+
+        return values
+
+    @staticmethod
     def get(key):
         """
         Get the value of the key from the SocketTableServer.

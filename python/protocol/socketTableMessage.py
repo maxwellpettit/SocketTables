@@ -40,7 +40,7 @@ class SocketTableMessage:
 
     @staticmethod
     def encodeMessage(message):
-        messageJson = json.dumps(OrderedDict(message))
+        messageJson = json.dumps(message)
 
         # Add newline to message
         messageJson = "%s\n" % messageJson
@@ -52,6 +52,5 @@ class SocketTableMessage:
     def decodeMessage(encodedMessage):
         message = None
         if (encodedMessage is not None):
-            message = json.loads(encodedMessage.decode(
-                encoding='utf-8'), object_pairs_hook=OrderedDict)
+            message = json.loads(encodedMessage.decode(encoding='utf-8'))
         return message

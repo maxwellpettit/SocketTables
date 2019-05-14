@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.Map;
 
 import socket.table.util.MessageParser;
 import socket.table.util.RequestType;
@@ -76,30 +77,33 @@ public class SocketTableMessageHandler implements Runnable {
         String key = MessageParser.parseMessage(message, MessageParser.KEY_PATTERN);
 
         if (request != null) {
-            String result = null;
-            if (key != null && request.equals(RequestType.GET.toString())) {
-                // Handle GET
-                result = socketTableData.getString(key, null);
-            } else if (key != null && request.equals(RequestType.UPDATE.toString())) {
-                // Handle UPDATE
-                String value = MessageParser.parseMessage(message, MessageParser.VALUE_PATTERN);
-                result = socketTableData.updateString(key, value);
-            } else if (key != null && request.equals(RequestType.DELETE.toString())) {
-                // Handle DELETE
-                result = socketTableData.delete(key);
-            } else if (request.equals(RequestType.GETALL.toString())) {
-                // TODO: Handle GETALL
+            if (request.equals(RequestType.GETALL.toString())) {
+                // Handle GETALL
+                Map<String, String> data = socketTableData.getAll();
+                response = MessageParser.formatGetAllResponse(data);
             } else {
-                System.out.println("Unknown request type: " + request);
+                String result = null;
+
+                if (key != null && request.equals(RequestType.GET.toString())) {
+                    // Handle GET
+                    result = socketTableData.getString(key, null);
+                } else if (key != null && request.equals(RequestType.UPDATE.toString())) {
+                    // Handle UPDATE
+                    String value = MessageParser.parseMessage(message, MessageParser.VALUE_PATTERN);
+                    result = socketTableData.updateString(key, value);
+                } else if (key != null && request.equals(RequestType.DELETE.toString())) {
+                    // Handle DELETE
+                    result = socketTableData.delete(key);
+                } else {
+                    System.out.println("Unknown request type: " + request);
+                }
+
+                // TODO: Handle callbacks
+                response = MessageParser.formatResponse(key, result);
             }
-
-            // TODO: Handle callbacks
-            response = MessageParser.formatResponse(key, result);
-
         } else {
             System.out.println("Unable to parse message: " + message);
         }
-
         return response;
     }
 

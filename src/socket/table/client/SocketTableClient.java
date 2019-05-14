@@ -1,5 +1,7 @@
 package socket.table.client;
 
+import java.util.Map;
+
 /*
 ----------------------------------------------------------------------------
 Author(s):     Maxwell Pettit
@@ -133,6 +135,13 @@ public class SocketTableClient {
 		return success;
 	}
 
+	public Map<String, String> getAll() {
+		SocketTableRequest request = new SocketTableRequest(host, port);
+
+		Map<String, String> response = request.processGetAll();
+		return response;
+	}
+
 	public static void main(String[] args) {
 		SocketTableClient client = new SocketTableClient();
 
@@ -140,7 +149,7 @@ public class SocketTableClient {
 		long total = 0;
 		for (int i = 0; i < runs; i++) {
 
-			if (i % 3 == 0) {
+			if (i % 5 == 0) {
 				long start = System.currentTimeMillis();
 				boolean success = client.updateString("test1", "Run - " + Integer.toString(i));
 
@@ -150,11 +159,31 @@ public class SocketTableClient {
 				long timeElapsed = finish - start;
 				total += timeElapsed;
 
-			} else if (i % 3 == 1) {
+			} else if (i % 5 == 1) {
 				long start = System.currentTimeMillis();
 				String value = client.getString("test1", "default");
 
 				System.out.println("GOT VALUE: " + value);
+
+				long finish = System.currentTimeMillis();
+				long timeElapsed = finish - start;
+				total += timeElapsed;
+
+			} else if (i % 5 == 2) {
+				long start = System.currentTimeMillis();
+				boolean success = client.updateInt("test2", i);
+
+				System.out.println("UPDATE SUCCESS: " + success);
+
+				long finish = System.currentTimeMillis();
+				long timeElapsed = finish - start;
+				total += timeElapsed;
+
+			} else if (i % 5 == 3) {
+				long start = System.currentTimeMillis();
+				Map<String, String> values = client.getAll();
+
+				System.out.println("GETALL VALUES: " + values.toString());
 
 				long finish = System.currentTimeMillis();
 				long timeElapsed = finish - start;

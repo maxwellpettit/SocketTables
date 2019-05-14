@@ -21,6 +21,7 @@ import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Map;
 
 import socket.table.util.MessageParser;
 import socket.table.util.RequestType;
@@ -43,15 +44,8 @@ public class SocketTableRequest {
 
 	private void createSocket() {
 		try {
-			long start = System.currentTimeMillis();
 			clientSocket = new Socket();
 			clientSocket.connect(new InetSocketAddress(host, port), TIMEOUT_MS);
-
-			if (debug) {
-				long finish = System.currentTimeMillis();
-				long timeElapsed = finish - start;
-				System.out.println("Socket Creation Time (ms): " + timeElapsed);
-			}
 
 		} catch (UnknownHostException e) {
 			e.printStackTrace();
@@ -70,28 +64,33 @@ public class SocketTableRequest {
 		}
 	}
 
+	private String getResponse(RequestType request, String key, String value) throws IOException {
+		// Get reader/writer
+		PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
+		BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+		// Format message
+		String message = MessageParser.formatMessage(request, key, value);
+
+		// Send message
+		if (debug) {
+			System.out.println("SENDING MESSAGE: " + message);
+		}
+		out.println(message);
+
+		// Read response
+		String responseMessage = in.readLine();
+		if (debug) {
+			System.out.println("GOT RESPONSE: " + responseMessage);
+		}
+		return responseMessage;
+	}
+
 	public String processMessage(RequestType request, String key, String value) {
 		String response = null;
 
 		try {
-			// Get reader/writer
-			PrintWriter out = new PrintWriter(clientSocket.getOutputStream(), true);
-			BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-
-			// Format message
-			String message = MessageParser.formatMessage(request, key, value);
-
-			// Send message
-			if (debug) {
-				System.out.println("SENDING MESSAGE: " + message);
-			}
-			out.println(message);
-
-			// Read response
-			String responseMessage = in.readLine();
-			if (debug) {
-				System.out.println("GOT RESPONSE: " + responseMessage);
-			}
+			String responseMessage = getResponse(request, key, value);
 
 			// Parse response
 			response = MessageParser.parseMessage(responseMessage, MessageParser.VALUE_PATTERN);
@@ -108,6 +107,29 @@ public class SocketTableRequest {
 		}
 
 		return response;
+	}
+
+	public Map<String, String> processGetAll() {
+		Map<String, String> values = null;
+
+		try {
+			String responseMessage = getResponse(RequestType.GETALL, null, null);
+
+			// Parse response
+			values = MessageParser.parseGetAllMessage(responseMessage);
+
+			if (values == null) {
+				System.out.println("Unable to parse message.");
+			}
+
+		} catch (Exception ex) {
+			System.out.println("Could not process message.");
+
+		} finally {
+			closeSocket();
+		}
+
+		return values;
 	}
 
 	public void debug(boolean enabled) {
