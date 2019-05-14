@@ -103,7 +103,6 @@ venv.bak/
 .mypy_cache/
 
 # VS Code workspace
-*.code-workspace
 .vscode/*
 
 # Dumps
