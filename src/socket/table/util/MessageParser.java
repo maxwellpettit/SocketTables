@@ -1,24 +1,23 @@
 package socket.table.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /*
 ----------------------------------------------------------------------------
-Author(s):     Maxwell Pettit
+Author(s):     	Maxwell Pettit
 
-Date:          4/1/2019
+Date:          	4/1/2019
 
-Description:   SocketTables provide a socket based communication protocol 
-               for performing simple in-memory CRUD (Create, Read, Update, 
-               Delete) operations. SocketTables are designed to use JSON 
-               messages to provide access to a key-value mapping on a 
-               Python server.
+Description:   	SocketTables provide a socket based communication protocol 
+               	for performing simple in-memory CRUD (Create, Read, Update, 
+               	Delete) operations. SocketTables are designed to use JSON 
+               	messages to provide access to a key-value mapping on a 
+               	Java or Python server.
 ----------------------------------------------------------------------------
 */
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.HashMap;
+import java.util.Map;
 
 public class MessageParser {
 
