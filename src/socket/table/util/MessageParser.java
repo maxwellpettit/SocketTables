@@ -21,8 +21,8 @@ import java.util.Map;
 
 public class MessageParser {
 
-    // Key/Values must be alphanumeric ('A-Z', 'a-z', '0-9', '_', '-', '.', ' ')
-    private static final String KEY_VALUE_FORMAT = "\"?([A-Za-z\\d_\\-\\.\\s]+)\"?";
+    // Key/Values must be alphanumeric ('A-Z', 'a-z', '0-9', '_', '-', '.', ' ', ',')
+    private static final String KEY_VALUE_FORMAT = "\"?([A-Za-z\\d_\\-\\.\\s\\,]+)\"?";
 
     private static final String CLIENT_REQUEST_TEMPLATE = "\"request\":\\s*\"([A-Z]+)\"";
     private static final String CLIENT_KEY_TEMPLATE = "\"key\":\\s*" + KEY_VALUE_FORMAT;
